@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Timers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s ease;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 200px;
+        }
+
+        .countdown {
+            text-align: center;
+            background-color: #5F7285;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+        }
+
+        .countdown h1 {
+            margin: 10px 0;
+            font-size: 2em;
+        }
+
+        .event-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .timer div {
+            margin: 0 15px;
+        }
+
+        .timer span {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .countdown-days {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="https://github.com/ivoong8/SuperNova/blob/main/HIEFO_no%20slogan.png?raw=true" class="logo"> 
+
+    <div class="countdown">
+        <h1 id="event-title"></h1>
+        <p class="event-date">Target Date: <strong id="event-date"></strong></p>
+        <div class="countdown-days" id="days-only"></div>
+        <p>Time remaining: <span id="countdown"></span></p>
+        <div class="timer">
+            <div><span id="days"></span> Days</div>
+            <div><span id="hours"></span> Hours</div>
+            <div><span id="minutes"></span> Minutes</div>
+            <div><span id="seconds"></span> Seconds</div>
+        </div>
+    </div>
+
+    <script>
+        // Array to store all timers
+        const timers = [
+            {
+                title: "Onet validates compliant HGC20 with heater layer",
+                date: "April 4, 2025 00:00:00",
+                bgColor: "#C8C3D6"
+            },
+            {
+                title: "Fully Compliant O Band Coherent Lite & IMDD",
+                date: "May 9, 2025 00:00:00",
+                bgColor: "#C8E6C9"
+            },
+            {
+                title: "Ship 500 bare coherent lite chips to Ciena",
+                date: "May 16, 2025 00:00:00",
+                bgColor: "#D8BFD8"
+            },
+            {
+                title: "Ship 5 fully packaged laser to Movelaser",
+                date: "May 16, 2025 00:00:00",
+                bgColor: "#F4C2C2"
+            }
+        ];
+
+        let currentTimerIndex = 0;
+        let countdownInterval;
+
+        function updateTimer() {
+            clearInterval(countdownInterval);
+
+            const timer = timers[currentTimerIndex];
+            document.getElementById("event-title").textContent = timer.title;
+            document.getElementById("event-date").textContent = new Date(timer.date).toDateString();
+            document.body.style.backgroundColor = timer.bgColor;
+
+            const eventDate = new Date(timer.date).getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const timeLeft = eventDate - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    nextTimer();
+                    return;
+                }
+
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById("days-only").textContent = `${days} Days`;
+                document.getElementById("days").textContent = days;
+                document.getElementById("hours").textContent = hours;
+                document.getElementById("minutes").textContent = minutes;
+                document.getElementById("seconds").textContent = seconds;
+                document.getElementById("countdown").textContent = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+            }
+
+            countdownInterval = setInterval(updateCountdown, 1000);
+            updateCountdown();
+        }
+
+        function nextTimer() {
+            currentTimerIndex = (currentTimerIndex + 1) % timers.length;
+            updateTimer();
+        }
+
+        updateTimer();
+    </script>
+</body>
+</html>
