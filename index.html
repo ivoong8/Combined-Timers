@@ -108,52 +108,76 @@
             }
         ];
 
-        let currentTimerIndex = 0;
-        let countdownInterval;
+       let currentTimerIndex = 0;
+let countdownInterval;
 
-        function updateTimer() {
+function updateTimer() {
+    clearInterval(countdownInterval);
+
+    const now = new Date().getTime();
+    let foundValidTimer = false;
+
+    // Skip past expired timers
+    while (currentTimerIndex < timers.length) {
+        const eventDate = new Date(timers[currentTimerIndex].date).getTime();
+        if (eventDate > now) {
+            foundValidTimer = true;
+            break;
+        }
+        currentTimerIndex++; // Move to the next timer
+    }
+
+    // If no valid future timers exist, restart from the first timer
+    if (!foundValidTimer) {
+        currentTimerIndex = 0;
+    }
+
+    const timer = timers[currentTimerIndex];
+    document.getElementById("event-title").textContent = timer.title;
+    document.getElementById("event-date").textContent = new Date(timer.date).toDateString();
+    document.body.style.backgroundColor = timer.bgColor;
+
+    const eventDate = new Date(timer.date).getTime();
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const timeLeft = eventDate - now;
+
+        if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-
-            const timer = timers[currentTimerIndex];
-            document.getElementById("event-title").textContent = timer.title;
-            document.getElementById("event-date").textContent = new Date(timer.date).toDateString();
-            document.body.style.backgroundColor = timer.bgColor;
-
-            const eventDate = new Date(timer.date).getTime();
-
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const timeLeft = eventDate - now;
-
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    nextTimer();
-                    return;
-                }
-
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById("days-only").textContent = `${days} Days`;
-                document.getElementById("days").textContent = days;
-                document.getElementById("hours").textContent = hours;
-                document.getElementById("minutes").textContent = minutes;
-                document.getElementById("seconds").textContent = seconds;
-                document.getElementById("countdown").textContent = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-            }
-
-            countdownInterval = setInterval(updateCountdown, 1000);
-            updateCountdown();
+            nextTimer();
+            return;
         }
 
-        function nextTimer() {
-            currentTimerIndex = (currentTimerIndex + 1) % timers.length;
-            updateTimer();
-        }
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        updateTimer();
+        document.getElementById("days-only").textContent = `${days} Days`;
+        document.getElementById("days").textContent = days;
+        document.getElementById("hours").textContent = hours;
+        document.getElementById("minutes").textContent = minutes;
+        document.getElementById("seconds").textContent = seconds;
+        document.getElementById("countdown").textContent = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+    }
+
+    countdownInterval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+}
+
+// Move to the next timer when the current one expires
+function nextTimer() {
+    currentTimerIndex = (currentTimerIndex + 1) % timers.length;
+    updateTimer();
+}
+
+// (Optional) Auto-switch timers every 10 seconds
+setInterval(nextTimer, 10000); 
+
+// Initialize
+updateTimer();
+
     </script>
 </body>
 </html>
